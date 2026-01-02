@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .calculator-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .calculator-header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .display {
+            background: #f5f5f5;
+            border-bottom: 3px solid #667eea;
+            padding: 20px;
+            text-align: right;
+        }
+
+        .display input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            text-align: right;
+            outline: none;
+        }
+
+        .display input::placeholder {
+            color: #999;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: #e0e0e0;
+            padding: 1px;
+        }
+
+        .btn-calc {
+            background: white;
+            border: none;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .btn-calc:hover {
+            background: #f0f0f0;
+            transform: scale(0.95);
+        }
+
+        .btn-calc:active {
+            background: #e0e0e0;
+            transform: scale(0.92);
+        }
+
+        .btn-operator {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-operator:hover {
+            background: #5568d3;
+        }
+
+        .btn-equals {
+            background: #28a745;
+            color: white;
+            grid-column: span 2;
+            font-weight: bold;
+        }
+
+        .btn-equals:hover {
+            background: #218838;
+        }
+
+        .btn-clear {
+            background: #dc3545;
+            color: white;
+            grid-column: span 2;
+            font-weight: bold;
+        }
+
+        .btn-clear:hover {
+            background: #c82333;
+        }
+
+        .btn-delete {
+            background: #ffc107;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .btn-delete:hover {
+            background: #e0a800;
+        }
+
+        .history-box {
+            background: #f9f9f9;
+            border-top: 2px solid #e0e0e0;
+            padding: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .history-item {
+            padding: 5px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #666;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-clear {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .history-clear button {
+            padding: 5px 10px;
+            font-size: 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            .calculator-container {
+                max-width: 100%;
+            }
+
+            .btn-calc {
+                padding: 15px;
+                font-size: 18px;
+            }
+
+            .display input {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator">
+            <!-- Header -->
+            <div class="calculator-header">
+                <h1>🧮 Calculator</h1>
+            </div>
+
+            <!-- Display -->
+            <div class="display">
+                <input type="text" id="display" readonly placeholder="0">
+            </div>
+
+            <!-- Buttons -->
+            <div class="buttons">
+                <!-- Row 1 -->
+                <button class="btn-calc btn-clear" onclick="clearDisplay()">AC</button>
+                <button class="btn-calc btn-delete" onclick="deleteLastChar()">DEL</button>
+                <button class="btn-calc btn-operator" onclick="appendOperator('/')">÷</button>
+
+                <!-- Row 2 -->
+                <button class="btn-calc" onclick="appendNumber('7')">7</button>
+                <button class="btn-calc" onclick="appendNumber('8')">8</button>
+                <button class="btn-calc" onclick="appendNumber('9')">9</button>
+                <button class="btn-calc btn-operator" onclick="appendOperator('*')">×</button>
+
+                <!-- Row 3 -->
+                <button class="btn-calc" onclick="appendNumber('4')">4</button>
+                <button class="btn-calc" onclick="appendNumber('5')">5</button>
+                <button class="btn-calc" onclick="appendNumber('6')">6</button>
+                <button class="btn-calc btn-operator" onclick="appendOperator('-')">-</button>
+
+                <!-- Row 4 -->
+                <button class="btn-calc" onclick="appendNumber('1')">1</button>
+                <button class="btn-calc" onclick="appendNumber('2')">2</button>
+                <button class="btn-calc" onclick="appendNumber('3')">3</button>
+                <button class="btn-calc btn-operator" onclick="appendOperator('+')">+</button>
+
+                <!-- Row 5 -->
+                <button class="btn-calc" style="grid-column: span 2;" onclick="appendNumber('0')">0</button>
+                <button class="btn-calc" onclick="appendNumber('.')">.</button>
+                <button class="btn-calc btn-operator" onclick="calculatePercentage()">%</button>
+
+                <!-- Row 6 -->
+                <button class="btn-calc btn-equals" onclick="calculate()">=</button>
+            </div>
+
+            <!-- History -->
+            <div class="history-box">
+                <div id="history"></div>
+                <div class="history-clear" id="historyClear" style="display: none;">
+                    <button onclick="clearHistory()">Clear History</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let display = document.getElementById('display');
+        let historyContainer = document.getElementById('history');
+        let historyClearBtn = document.getElementById('historyClear');
+        let calculations = [];
+
+        function appendNumber(number) {
+            if (display.value === '0' && number !== '.') {
+                display.value = number;
+            } else if (number === '.' && display.value.includes('.')) {
+                return;
+            } else {
+                display.value += number;
+            }
+        }
+
+        function appendOperator(operator) {
+            if (display.value === '') return;
+            if (['+', '-', '*', '/'].includes(display.value[display.value.length - 1])) {
+                display.value = display.value.slice(0, -1) + operator;
+            } else {
+                display.value += operator;
+            }
+        }
+
+        function deleteLastChar() {
+            display.value = display.value.slice(0, -1);
+            if (display.value === '') {
+                display.value = '0';
+            }
+        }
+
+        function clearDisplay() {
+            display.value = '0';
+        }
+
+        function calculatePercentage() {
+            if (display.value === '') return;
+            try {
+                let result = eval(display.value) / 100;
+                display.value = result;
+            } catch {
+                display.value = 'Error';
+            }
+        }
+
+        function calculate() {
+            try {
+                let expression = display.value;
+                let result = eval(expression);
+                
+                // Add to history
+                addToHistory(expression, result);
+                
+                display.value = result;
+            } catch {
+                display.value = 'Error';
+            }
+        }
+
+        function addToHistory(expression, result) {
+            const item = `${expression} = ${result}`;
+            calculations.unshift(item);
+            
+            // Keep only last 10 calculations
+            if (calculations.length > 10) {
+                calculations.pop();
+            }
+            
+            updateHistory();
+        }
+
+        function updateHistory() {
+            historyContainer.innerHTML = '';
+            if (calculations.length === 0) {
+                historyClearBtn.style.display = 'none';
+            } else {
+                historyClearBtn.style.display = 'block';
+                calculations.forEach(calc => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.textContent = calc;
+                    historyContainer.appendChild(div);
+                });
+            }
+        }
+
+        function clearHistory() {
+            calculations = [];
+            updateHistory();
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
+            if (e.key === '.') appendNumber('.');
+            if (e.key === '+' || e.key === '-') appendOperator(e.key);
+            if (e.key === '*') {
+                e.preventDefault();
+                appendOperator('*');
+            }
+            if (e.key === '/') {
+                e.preventDefault();
+                appendOperator('/');
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                calculate();
+            }
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                deleteLastChar();
+            }
+            if (e.key === 'Escape') {
+                clearDisplay();
+            }
+        });
+
+        // Initialize
+        display.value = '0';
+    </script>
+</body>
+</html>
